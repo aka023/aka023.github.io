@@ -1,0 +1,373 @@
+
+"openapi": "3.0.0"
+"info":
+  "title": "Webshop Order Historie"
+  "version": "1.0.0"
+  "description": "This service provide data for the Order Historie"
+"servers":
+  - description: Developement Server
+    "url": "https://dested21ci.stiebel-eltron.com/zste/zwebshop/OrderHistorie"
+  - description: Test Server
+    "url": "https://destet21ci.stiebel-eltron.com/zste/zwebshop/OrderHistorie"
+  - description: Production Server
+    "url": "https://destep21ci.stiebel-eltron.com/zste/zwebshop/OrderHistorie"    
+
+paths:
+  /{Customer}:
+    get:
+      parameters:
+      - $ref: '#/components/parameters/Customer'
+      - $ref: '#/components/parameters/Salesorg'    
+      - $ref: '#/components/parameters/Distrchnl' 
+      - $ref: '#/components/parameters/fromvbeln'
+      - $ref: '#/components/parameters/hits'
+      - $ref: '#/components/parameters/prodh'
+      - $ref: '#/components/parameters/laiso'
+      - $ref: '#/components/parameters/fromdate'
+      - $ref: '#/components/parameters/todate'
+      - $ref: '#/components/parameters/ponumber'
+      - $ref: '#/components/parameters/posstatus'
+      summary: get Order Historie by Customernumber
+      tags:
+        - Customer 
+
+      responses: 
+        200: 
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderhistlist'
+        400: 
+          description: bad request
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'
+        405:
+          description: wrong method
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error' 
+        500:
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error' 
+ 
+  /{Customer}/{SalesOrder}: 
+    get:
+      parameters:
+      - $ref: '#/components/parameters/Customer'
+      - $ref: '#/components/parameters/SalesOrder' 
+      - $ref: '#/components/parameters/Salesorg'    
+      - $ref: '#/components/parameters/Distrchnl'    
+      summary: get detaild information for sales document
+      tags:
+        - SalesDocument 
+
+      responses: 
+        200: 
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orderhistlist'
+        400: 
+          description: bad request
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'
+        405:
+          description: wrong method
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'     
+        500:
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'     
+
+  /{Customer}/{SalesOrder}/{Address}: 
+    get:
+      parameters:
+      - $ref: '#/components/parameters/Customer'
+      - $ref: '#/components/parameters/SalesOrder' 
+      - $ref: '#/components/parameters/Address'   
+      - $ref: '#/components/parameters/Salesorg'    
+      - $ref: '#/components/parameters/Distrchnl'    
+ 
+      summary: get detaild information for address
+      tags:
+        - Address 
+
+      responses: 
+        200: 
+          description: Ok
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/address'
+        400: 
+          description: bad request
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'
+        405:
+          description: wrong method
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'     
+        500:
+          description: Internal Server Error
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/error'     
+
+components:
+  "securitySchemes":
+    "basicAuth":
+      "type": "http"
+      "scheme": "basic"
+
+  parameters: 
+    Customer:
+      name: Customer
+      required: true
+      in: path
+      schema:
+          type: string
+          maxLength: 10
+      description: Customer Number
+      example: 4000162
+    SalesOrder:
+      name: SalesOrder
+      required: true
+      in: path
+      schema:
+          type: string
+          maxLength: 10
+      description: Sales Order Number
+      example: 344
+    Address:
+      name: Address
+      required: true
+      in: path
+      schema:
+          type: string
+          maxLength: 10
+      description: Address Number
+      example: 1234567890
+    Salesorg:
+      name: salesorg
+      required: true
+      in: header
+      schema:
+          type: string
+          maxLength: 4
+      description: Salesorganisation
+      example: 7205
+    Distrchnl:
+      name: distrchnl
+      required: true
+      in: header
+      schema:
+          type: string
+          maxLength: 2
+      description: Distributionchannel
+      example: 10 
+
+
+    fromvbeln:
+        name: FromVbeln
+        in: query  
+        schema:  
+          maxLength: 10
+          type: string
+        description: salesdocument number from
+    hits:
+        name: Hits
+        in: query
+        schema:
+          type: number
+          format: float
+        description: numbers of hits
+    prodh:
+        name: Prodh
+        in: query
+        schema:
+          type: string
+          maxLength: 18
+        description: product hierarchie
+    laiso:
+        name: Laiso
+        in: query
+        schema:
+          type: string
+          maxLength: 2
+        description: iso language code
+    fromdate:
+        name: FromDate
+        in: query
+        schema:
+          type: string
+          format: date
+        description: date from 
+    todate:
+        name: ToDate
+        in: query
+        schema:
+          type: string
+          format: date
+        description: date to
+    ponumber:
+        name: PoNumber
+        in: query
+        schema:
+          type: string
+          maxLength: 20
+        description: customer reference 
+    posstatus:
+        name: PosStatus
+        in: query
+        schema:
+          type: string
+          maxLength: 20
+        description: document position status
+
+  schemas:
+    error:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        msg: 
+          type: string
+          format: json
+        method: 
+          type: string
+          example: GET    
+      
+    orderhistlist:
+      type: object
+      properties:
+        vbeln:
+           type: string
+           maxLength: 10
+           description: Sales Document Number
+        erdat:
+           type: string
+           format: date
+           description: Creation Date
+        posnr:
+           type: string
+           maxLength: 6
+           description: position number
+        matnr:
+           type: string
+           maxLength: 40
+           description: materialnumber
+        arktx:
+           type: string
+           maxLength: 40
+           description: Shorttext of position
+        prodh:
+           type: string
+           maxLength: 18
+           description: product hierarchie
+        abgru:
+           type: string
+           maxLength: 2
+           description: cancel reason
+        abgrutext:
+           type: string
+           maxLength: 40
+           description: text of cancel reason
+        netwr:
+           type: number
+           format: float
+           description: net value
+        waerk:
+           type: string
+           maxLength: 5
+           description: currency
+        kwmeng:
+           type: number
+           format: float
+           description: order quantity 
+        vrkme:
+           type: string
+           maxLength: 3
+           description: sales unit 
+        postatus:
+           type: string
+           maxLength: 20
+           description: document position status
+        posstatustext:
+           type: string
+           maxLength: 60
+           description: text of document position status
+        ponumber:
+           type: string
+           maxLength: 20
+           description: customer reference
+        deliveryblock:
+           type: string
+           maxLength: 2
+           description: delivery block
+        totalvalue:
+           type: number
+           description: total net value
+    address:
+      type: object
+      properties:
+        name:
+           type: string
+           maxLength: 40
+           description: Name 1 
+        name_2:
+           type: string
+           maxLength: 40
+           description: Name 2
+        street:
+           type: string
+           maxLength: 40
+           description: Street
+        house_no:
+           type: string
+           maxLength: 10
+           description: House Number
+        postl_cod1:
+           type: string
+           maxLength: 10
+           description: City postal code
+        city:
+           type: string
+           maxLength: 25
+           description: City
+        tel1_numbr:
+           type: string
+           maxLength: 30
+           description: Telephone Number
+        mob_number:
+           type: string
+           maxLength: 30
+           description: Mobil Number
+        fax_number:
+           type: string
+           maxLength: 30
+           description: Fax Number
+        e_mail:
+           type: string
+           maxLength: 241
+           description: Emailaddress
