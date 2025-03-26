@@ -1,0 +1,519 @@
+
+"openapi": "3.0.0"
+"info":
+  "title": "Weblogin API"
+  "version": "1.0.0"
+  "description": "This service is used to manage weblogin accesses
+                   Last Update 25.03.2025"
+"servers":
+  - description: Developement Server
+    "url": "https://d02.stiebel-eltron.com:8443"
+  - description: Test Server
+    "url": "https://t02.stiebel-eltron.com:8443"
+  - description: Production Server
+    "url": "https://SE2.stiebel-eltron.com:8443"    
+
+paths:
+  /zste/zste_weblogin/:
+    parameters:
+    - $ref: '#/components/parameters/Salesorg'    
+    - $ref: '#/components/parameters/Distrchnl'
+    post:
+      summary: create new login without existing customer
+      tags:
+        - Users 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestPostBody"
+      responses: 
+        200: 
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/postrspcust'
+        400: 
+          description: bad request
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/badrsp'
+        405:
+          description: wrong method
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/badrsp' 
+  /zste/zste_weblogin/{customer}:
+    parameters:
+    - $ref: '#/components/parameters/Salesorg'    
+    - $ref: '#/components/parameters/Distrchnl'
+    post:
+      summary: create new login for existing customer
+      tags:
+        - Customer 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/requestCustPostBody"
+      responses: 
+        
+        200: 
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/postrspcust'
+        400: 
+          description: bad request
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/badrsp'
+        405:
+          description: wrong method
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/badrsp'
+  /zste/zste_weblogin/{customer}/{partner}:
+    parameters:
+    - $ref: '#/components/parameters/Salesorg'    
+    - $ref: '#/components/parameters/Distrchnl'
+    get:
+      summary: Get Login Data
+      tags:
+        - Partner
+      responses: 
+        200: 
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/getrsplgn'
+        400: 
+          description: bad request
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/badrsp'
+        405:
+          description: wrong method
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/badrsp'
+components:
+  "securitySchemes":
+    "basicAuth":
+      "type": "http"
+      "scheme": "basic"
+  parameters: 
+    Salesorg:
+      name: salesorg
+      required: true
+      in: header
+      schema:
+          type: string
+          maxLength: 4
+      description: Salesorganisation
+      example: 1200
+    Distrchnl:
+      name: distrchnl
+      required: true
+      in: header
+      schema:
+          type: string
+          maxLength: 2
+      description: Distributionchannel
+      example: 10
+    Customer:
+      name: customer
+      required: true
+      in: header
+      schema:
+          type: string
+          maxLength: 10
+      description: Customernumber
+      example: 0009876543
+    Partner:
+      name: partner
+      required: true
+      in: header
+      schema:
+          type: string
+          maxLength: 10
+      description: Contact Person  
+      example: 0001234567       
+  schemas:
+    postrspcust:
+      type: object
+      properties:
+        success:
+          type: boolean
+        msg: 
+          type: string
+        method: 
+          type: string
+          example: GET
+    getrsplgn:
+      type: object
+      properties:
+        success:
+          type: boolean
+        msg: 
+          $ref: '#/components/schemas/login'
+        method: 
+          type: string
+          example: GET
+    badrsp:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        msg: 
+          type: string
+        method: 
+          type: string
+          example: GET
+    login:
+      type: object
+      properties:
+          partner:
+              type: integer 
+              minimum: 10
+              maximum: 10
+              example: 0001234567
+          customer:
+              type: string 
+              maxLength: 10
+              example: 0009876543
+          salesorg:
+              type: string
+              maxLength: 4
+              example: 1200
+          distrchnl: 
+              type: string
+              maxLength: 2
+              example: 10
+          contactperson:
+              $ref: '#/components/schemas/contactperson'             
+          customeradress:
+              $ref: '#/components/schemas/customeradress'
+          customeradditionaldata: 
+              $ref: '#/components/schemas/customeradditionaldata'
+          authorizations:
+              $ref: '#/components/schemas/authorizations'
+          responsibleSalesperson:
+              $ref: '#/components/schemas/responsibleSalesperson'
+
+    contactperson:
+        type: object
+        properties:
+          title: 
+            type: string
+            maxLength: 30
+            example: Mr
+          firstname:
+            type: string
+            maxLength: 35
+            example: Max
+          lastname:
+            type: string
+            maxLength: 35
+            example: Musterman
+          mailadresse:
+            type: string
+            maxLength: 241
+            example: Max.Musterman@email.de
+          dktpkst:
+            type: number
+            format: float
+            example: 1234
+          drppkst:
+            type: number
+            format: float
+            example: 2345          
+          partnerprogram:
+            type: string
+            maxLength: 4
+            example: PREM
+          generalauthorisation:
+            type: boolean
+  
+    customeradress:
+        type: object
+        properties:            
+          companyname:
+            type: string
+            maxLength: 70
+            example: Musterman GmbH Sanitärfachbetrieb
+          companynameptone:
+            type: string
+            maxLength: 40
+            example: Musterman GmbH 
+          companynamepttwo:
+            type: string
+            maxLength: 40      
+            example: Sanitärfachbetrieb
+          city:
+            type: string
+            maxLength: 40
+            example: Musterhausen
+          postcode:
+            type: string
+            maxLength: 10
+            example: 12345
+          street:
+            type: string
+            maxLength: 60
+            example: Musterallee
+          housenumone:
+            type: string
+            maxLength: 10
+            example: 13
+          housenumtwo:
+            type: string
+            maxLength: 10  
+            example: A          
+          telnumber:
+            type: string
+            maxLength: 30            
+            example: 05531 702 
+          telextens:
+            type: string
+            maxLength: 10      
+            example: 9500      
+ 
+    customeradditionaldata:
+        type: object
+        properties:                 
+          accountgroup:
+            type: string
+            maxLength: 4
+            example: 0001
+          customergroup:
+            type: string
+            maxLength: 3   
+            example: U4
+          salesgroup:
+            type: string
+            maxLength: 2      
+            example: 940   
+          paymentmethod:
+            type: string
+            maxLength: 10    
+            example: R      
+          termspayment:
+            type: string
+            maxLength: 4 
+            example: D000
+          customernotwo:
+            type: string
+            maxLength: 10
+            example: 0000654321          
+          customernothree:          
+            type: string
+            maxLength: 4
+            example: 0000852741
+
+    authorizations:
+        type: object
+        properties:  
+          deliveryblock:
+            type: string
+            example: Z1
+          deletionmark:
+            type: boolean            
+          servicecontract:
+            type: string
+            maxLength: 2
+            example: P2
+          offertool:
+            type: boolean
+          shop:
+            type: boolean
+          kdiblog:
+            type: string
+            maxLength: 1
+            example: S
+          marketingtool:
+            type: boolean
+          wpasext:
+            type: boolean            
+          ranking:
+            type: integer
+            minimum: 1
+            maximum: 1
+            example: 1
+    responsibleSalesperson:
+       type: object
+       properties:
+          firstname:
+            type: string
+            maxLength: 35
+            example: Max
+          lastname:
+            type: string
+            maxLength: 35
+            example: Musterman
+          mailadresse:
+            type: string
+            maxLength: 241
+            example: Max.Musterman@email.de
+          function:
+            type: string
+            maxLength: 72
+            example: Sales Manager
+          telnumber1:
+            type: string
+            maxLength: 30            
+            example: 05531 702 
+          telnumber2:
+            type: string
+            maxLength: 30            
+            example: 017312345678
+
+    requestCustPostBody:
+          type: object
+          required: [source, guid, contactperson]
+          properties:
+             source:
+               type: string
+               maxLength: 2
+               example: "01"
+             guid:
+               type: string
+               maxLength: 10
+               example: "1234567890"
+             contactperson:
+               $ref: '#/components/schemas/PersonPost'  
+    requestPostBody:
+          type: object
+          required: [source, guid, customerdata, contactperson]
+          properties:
+             source:
+               type: string
+               example: "01"
+             guid:
+               type: string
+               example: "1234567890"
+             customerdata:
+               $ref: '#/components/schemas/CustPost'
+             contactperson:
+               $ref: '#/components/schemas/PersonPost'  
+    PersonPost:
+          type: object
+          required: [username, lastname, mailadresse]
+          properties:
+              username:
+                type: string
+                maxLength: 40
+                example: "Username"
+              title:
+                type: string
+                maxLength: 4
+                example: "0001"
+              firstname:
+                type: string
+                maxLength: 35
+                example: "Max"
+              lastname:
+                type: string
+                maxLength: 35
+                example: "Musertamnn"
+              mailadresse:
+                type: string
+                maxLength: 241
+                format: email
+                example: "max.mustermann@ste.de"
+              telnumber:
+                type: string
+                maxLength: 30
+                example: "05531702"
+              telextens:
+                type: string
+                maxLength: 10
+                example: "95821"
+              flag_newsletter:
+                type: string
+                maxLength: 1
+                example: "X"
+              flag_email:
+                type: string
+                maxLength: 1
+                example: "X"
+              flag_telefon:
+                type: string
+                maxLength: 1
+                example: ""
+              flag_fax:
+                type: string
+                maxLength: 1
+                example: ""
+              flag_let:
+                type: string
+                maxLength: 1
+                example: ""
+    CustPost:
+          type: object
+          required: [companyname, city, postcode, street, housenumone, countryiso, language_iso, branch, currency, customergroup]
+          properties:
+              companyname:
+                type: string
+                maxLength: 70
+                example: "TEST GmbH"
+              compaynnameptone:
+                type: string
+                maxLength: 40
+                example: "Test"
+              companynamepttwo:
+                type: string
+                maxLength: 40
+                example: "GmbH"
+              city:
+                type: string
+                maxLength: 40
+                example: "Boffzen"
+              postcode:
+                type: string
+                maxLength: 10
+                example: "37691"
+              street:
+                type: string
+                maxLength: 60
+                example: "Musterstraße"
+              housenumone:
+                type: string
+                maxLength: 10
+                example: "1"
+              countryiso:
+                type: string
+                maxLength: 2
+                example: "DE"
+              language_iso:
+                type: string
+                maxLength: 2
+                example: "DE"
+              branch:
+                type: string
+                maxLength: 4
+                example: "9"
+              vatnumber:
+                type: string
+                maxLength: 20
+                example: ""
+              currency:
+                type: string
+                maxLength: 5
+                example: "EUR"
+              customergroup:
+                type: string
+                maxLength: 2
+                example: "01"
